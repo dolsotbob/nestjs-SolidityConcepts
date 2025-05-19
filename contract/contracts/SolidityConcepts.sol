@@ -48,8 +48,9 @@ contract SolidityConcepts {
     receive() external payable {}
 
     function sendEther(address payable recipient) public payable {
-        (bool sent, ) = recipient.call{value: msg.value}("");
         require(msg.value > 0, "Must send ether");
+        (bool sent, ) = recipient.call{value: msg.value}("");
+        require(sent, "Transfer failed");
     }
 
     function getContractBalance() public view returns (uint256) {

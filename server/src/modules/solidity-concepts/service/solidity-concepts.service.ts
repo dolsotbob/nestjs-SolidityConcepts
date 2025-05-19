@@ -61,6 +61,7 @@ export class SolidityConceptsService {
       // Todo: updateValue의값을 리턴합니다.
       // ⚠️ bigint 타입은 JSON으로 변환 시 string으로 변환 필요
       const updatedValue = await this.ethersService.updateValue(value);
+      // console.log(updatedValue);
 
       if (
         typeof updatedValue === 'object' &&

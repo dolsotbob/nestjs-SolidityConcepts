@@ -55,28 +55,28 @@ export class EthersService {
 
   async owner() {
     // Todo: owner의 값을 리턴합니다.
-    return this.contract.owner();
+    return await this.contract.owner();
 
   }
 
   async fixedValue() {
     // Todo: FIXED_VALUE의 값을 리턴합니다.
-    return this.contract.FIXED_VALUE();
+    return await this.contract.FIXED_VALUE();
   }
 
   async value() {
     // Todo: value의 값을 리턴합니다.
-    return this.contract.value();
+    return await this.contract.value();
   }
 
   async checkValue(value: number) {
     // Todo: checkValue의 값을 리턴합니다.
-    return this.contract.checkValue(value);
+    return await this.contract.checkValue(value);
   }
 
   async sumUpTo(value: number) {
     // Todo: sumUpTo의값을 리턴합니다.
-    return this.contract.sumUpTo(value);
+    return await this.contract.sumUpTo(value);
   }
 
   async updateValue(value: number) {
@@ -97,6 +97,8 @@ export class EthersService {
     // parseLog()는 Solidity 코드가 아니라 ethers.js에서 제공하는 메서드
     const tx = await this.contract.updateValue(value);
     const receipt = await tx.wait();
+
+    // console.log(receipt);
 
     for (const log of receipt.logs) {
       try {
@@ -124,7 +126,10 @@ export class EthersService {
   async sendEther(address: string, value: number) {
     // Todo: sendEther의값을 리턴합니다.
     // ⚠️ setter함수는 tx 확정 후 영수증을 리턴합니다.(wait)
-    const tx = await this.contract.sendEther(address, value);
+    // ethers.js에서 value는 optional 하다는 것을 확인: overrides.value ==> value 부분은 객체로 넣기 
+    // - wei로 되어 있기 때문에 parseEther로 이더로 바꿔야 하고, 
+    // - data 타입이 string 이기 때문에 toString
+    const tx = await this.contract.sendEther(address, { value: this.parseEther(value.toString()) });
     const receipt = await tx.wait();
     return receipt;
   }
@@ -137,11 +142,11 @@ export class EthersService {
   }
 
   async deposit(value: number) {
-    // Todo: Contract에 코인을 전송합니다.
+    // Todo: Contract에 코인을 전송합니다. (컨트랙트에 직접 코인을 전송해야함)
     // ⚠️ tx 확정 후 영수증을 리턴합니다.(wait)
     const tx = await this.signer.sendTransaction({
       to: this.contract.target,
-      value: parseEther(value.toString()),
+      value: this.parseEther(value.toString()),
     });
     const receipt = await tx.wait();
     return receipt;
