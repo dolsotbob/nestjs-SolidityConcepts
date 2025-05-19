@@ -59,6 +59,8 @@ const mockContract = {
 
   withDraw: jest.fn().mockResolvedValue({ wait: mockWait }),
   parseEther: jest.fn((value: string) => BigInt(Number(value) * 1e18)),
+
+  getContractBalance: jest.fn().mockResolvedValue(BigInt(3e18)), // 여기 추가
 };
 
 describe('EthersService', () => {
@@ -152,17 +154,10 @@ describe('EthersService', () => {
   });
 
   it('getContractBalance()는 ether 단위로 반환해야 합니다.', async () => {
-    try {
-      service['provider'].getBalance = jest
-        .fn()
-        .mockResolvedValue(service.parseEther('5'));
-
-      const result = await service.getContractBalance();
-      expect(result).toBe('5.0');
-    } catch (error) {
-      console.error(error.message);
-      fail();
-    }
+    // 이 안쪽 수정
+    const result = await service.getContractBalance();
+    expect(result).toBe('3.0');
+    expect(mockContract.getContractBalance).toHaveBeenCalled();
   });
 
   it('deposit()은 트랜잭션 영수증을 반환해야 합니다.', async () => {
